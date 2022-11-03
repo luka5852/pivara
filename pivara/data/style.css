@@ -22,7 +22,6 @@ body{
     border-radius: 50%;
     box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #441313 0 -1px 9px, rgba(255, 0, 0, 0.5) 0 2px 12px;
 }
-
 label{
     font-size: 15px;
     font-family: Arial, Helvetica, sans-serif;
@@ -128,6 +127,7 @@ label{
     box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset burlywood 0 -1px 5px, chocolate 0 2px 12px;
 }
 .text_box{
+    text-align: center;
     margin-top: 10px;
     margin-right: 0px;
     width: 100px;

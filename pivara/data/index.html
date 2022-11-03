@@ -37,16 +37,28 @@
                     <div class="tekst_srednjeg_panela"><label for="labela_pumpa_piva" id="pumpa-piva">Pumpa piva</label></div>
                     <div class="tekst_srednjeg_panela"><label for="labela_pumpa_vode">Pumpa vode</label></div>
                     <div class="tekst_srednjeg_panela"><label for="labela_grijac">Grijač</label></div>
-                    <div class="tekst_srednjeg_panela"><label>TEMP [*C]</label></div>
-                    <div class="tekst_srednjeg_panela"><label>VRIJEME [min]</label></div>
+                    <div class="tekst_srednjeg_panela"><label id="temperatura_l">TEMP [*C]</label></div>
+                    <div class="tekst_srednjeg_panela"><label id="vrijeme_l">VRIJEME [min]</label></div>
 
                 </div>
                 <div class = "srednji_panel">
                     <div class="led_indikatori" id="labela_pumpa_piva"></div>
                     <div class="led_indikatori" id="labela_pumpa_vode"></div>
                     <div class="led_indikatori" id="labela_grijac"></div>
-                    <div class="text_box"><label></label></div>
-                    <div class="text_box"><label></label></div>
+                        <div class="text_box">
+                            <div class="text_box_vrijednosti">
+                                <label for="temperatura_l" id="labela_trenutna_temperatura">?</label>
+                                <label >/</label>
+                                <label for="temperatura_l" id="labela_trazena_temperatura">0</label>
+                            </div>
+                        </div>
+                        <div class="text_box">
+                            <div class="text_box_vrijednosti">
+                                <label for="temperatura_l" id="labela_trenutno_vrijeme">?</label>
+                                <label >/</label>
+                                <label for="temperatura_l" id="labela_trazeno_vrijeme">0</label>
+                            </div>
+                        </div>
                 </div>
             </div>
 
