@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatibile" content="IE=edge">
+        <title>Pivara</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>  
+        <div class="naslov">
+                <div class="naslov_tekst">
+                    <p>PIVARA</p>
+                </div>
+            <p class="indikator_rada" id="indikator_rada"></p>
+        </div>
+
+        <div class="input_tekst">
+            <div class="tekst">
+                <div><label for="temperatura_trazena">Temperatura [*C]:</label></div>
+                <div><label for="vrijeme_trazeno">Vrijeme kuvanja [min]:</label></div>
+            </div>
+            <div class="tekst">
+                <div><input type="number" id="temperatura_trazena" name="temperatura_trazena"></div>
+                <div><input type="number" id="vrijeme_trazeno" name="vrijeme_trazeno"></div>
+            </div>
+            <div><button onclick="upisati_temp_vrijeme()" id="upisati">UPISATI</button></div>
+            <div><button onclick="start()" id="start">START</button></div>
+            <div><button onclick="stop()" id="stop">STOP</button></div>
+
+        </div>
+        
+
+        <div class="centralni_reon">
+
+            <div class="kolona_lijevo">
+                <div class = "srednji_panel">
+                    <div class="tekst_srednjeg_panela"><label for="labela_pumpa_piva" id="pumpa-piva">Pumpa piva</label></div>
+                    <div class="tekst_srednjeg_panela"><label for="labela_pumpa_vode">Pumpa vode</label></div>
+                    <div class="tekst_srednjeg_panela"><label for="labela_grijac">Grijač</label></div>
+                    <div class="tekst_srednjeg_panela"><label>TEMP [*C]</label></div>
+                    <div class="tekst_srednjeg_panela"><label>VRIJEME [min]</label></div>
+
+                </div>
+                <div class = "srednji_panel">
+                    <div class="led_indikatori" id="labela_pumpa_piva"></div>
+                    <div class="led_indikatori" id="labela_pumpa_vode"></div>
+                    <div class="led_indikatori" id="labela_grijac"></div>
+                    <div class="text_box"><label></label></div>
+                    <div class="text_box"><label></label></div>
+                </div>
+            </div>
+
+            <div class = "slika_brewera"><img id="slika_brewera" src="slike/brewer.png"></div>
+           
+            <div class = "desni_panel">
+                <div><button onclick="prekidac_pumpa_piva()" id="pumpa_piva">PUMPA PIVA</button></div>
+                <div><button onclick="prekidac_pumpa_vode()" id="pumpa_vode">PUMPA VODE</button></div>
+            </div>
+
+        </div>
+
+        <script src="main.js"></script>
+    </body>
+</html>
