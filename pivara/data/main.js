@@ -157,6 +157,7 @@ function prekidac_pumpa_piva() {
         var xhttp = new XMLHttpRequest();
         setState('pumpa_piva',!state.pumpa_piva)
         upis_boje(state.pumpa_piva,"labela_pumpa_piva");
+
         xhttp.onreadystatechange = function(){
             if(this.readyState == 4 && this.status == "200"){
                 message = this.responseText;
