@@ -135,8 +135,9 @@ label{
     border: black;
 }
 .desni_panel{
-    text-align: center;
-    margin: auto;
+    text-align: left;
+    margin-left: 20px;
+    margin-top: 80px;
 }
 #pumpa_piva {
     margin: 5px;

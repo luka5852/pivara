@@ -1,6 +1,7 @@
 let temperatura_trazena;
 let vrijeme_trazeno;
 let vrijeme_trenutno = 0;
+var message;
 
 const state = {
     pumpa_piva: JSON.parse(localStorage.getItem('pumpa_piva')) || false,
@@ -27,7 +28,7 @@ const loadApp = () => {
     upis_boje(state.pumpa_vode, "labela_pumpa_vode");
     upis_boje(state.stanje_pivare, "indikator_rada");
     upisati_vrijednost_u_labelu('labela_trazena_temperatura', state.trazena_temperatura);
-    upisati_vrijednost_u_labelu('labela_trazeno_vrijeme', state.trazena_temperatura);
+    upisati_vrijednost_u_labelu('labela_trazeno_vrijeme', state.trazeno_vrijeme);
     if(state.stanje_pivare == true){
         document.getElementById('slika_brewera').style.filter = "drop-shadow(0 0 0.75rem #15ff00)";
     }    
@@ -43,7 +44,6 @@ var delay_in_microseconds = 1000; //1 sekund
 setInterval(function(){
     if(state.stanje_pivare){ //Kad pivara radi provjerava dalje da li je kuvanje zavrseno ili nije
         if(state.stanje_kuvanja === 'kuvanje'){ //Provjerava stanje kuvanja
-            vrijeme_trenutno += 1;
             document.getElementById('labela_trenutno_vrijeme').innerHTML = vrijeme_trenutno;
             if(parseInt(vrijeme_trenutno) >= parseInt(state.trazeno_vrijeme)){
                 document.getElementById('slika_brewera').style.filter = "drop-shadow(0 0 0.75rem #15ff00)";
@@ -52,17 +52,29 @@ setInterval(function(){
                 //FUNKCIJA DA POŠALJE MIKROKONTROLERU DA JE KRAJ KUVANJA
                 
             }
+            vrijeme_trenutno += 1;
         }
     }
-}, delay_in_microseconds * 5); //Svakog (sekunda * X) opali funkciju 
+}, delay_in_microseconds * 60); //Svakog (sekunda * X) opali funkciju 
 
 setInterval(function(){
     //POLING ZA ČITANJE STANJA GRIJAČA
-    //POLING ZA ČITANJE TRENUTNE TEMPERATURE 
+    //POLING ZA ČITANJE TRENUTNE TEMPERATURE
+}, delay_in_microseconds * 15); //Polling za senzore, grijace itd itd - interakcija sa esp32-kom 
 
-}, delay_in_microseconds * 3); //Polling za senzore, grijace itd itd - interakcija sa esp32-kom 
 
+function send_data_to_esp32(){
+    //POSLATI STANJE PUMPE PIVA
+    //POSLATI STANJE PUMPE VODE
+    //POSLATI TEMPERATURU
+}
 
+/*
+    NAPRAVITI SA STRANE DUGMAD ZA:
+        -PROKLJUCAVANJE VODE
+        -WIRPOL EFEKAT
+        -KLJUCANJE SA HMELJOM
+*/
 
 function upisati_temp_vrijeme() {
     if(state.stanje_pivare){
@@ -135,23 +147,20 @@ function stop() {
         vrijeme_trazeno = document.getElementById("vrijeme_trazeno").value = '';
         document.getElementById('slika_brewera').style.filter = "drop-shadow(0 0 0.75rem #F00)";
 
-
         //FUNKCIJA DA POŠALJE MIKROKONTROLERU DA ZAVRŠI KUVANJE
 
-
     }
-
 }
 
 function prekidac_pumpa_piva() {
-    setState('pumpa_piva',!state.pumpa_piva)
+    setState('pumpa_piva',!state.pumpa_piva);
     upis_boje(state.pumpa_piva,"labela_pumpa_piva");
-    location.href = '/PUMPA_PIVA';
+    //location.href = '/PUMPA_PIVA';
 }
 function prekidac_pumpa_vode() {
-    setState('pumpa_vode',!state.pumpa_vode)
+    setState('pumpa_vode',!state.pumpa_vode);
     upis_boje(state.pumpa_vode, "labela_pumpa_vode");
-    location.href = '/PUMPA_VODE';
+    //location.href = '/PUMPA_VODE';
 }
 
 function upis_boje(state, id){
