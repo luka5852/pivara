@@ -1,6 +1,7 @@
 let temperatura_trazena;
 let vrijeme_trazeno;
 let vrijeme_trenutno = 0;
+let temperatura_trenutna = 0;
 var http_message;
 
 const state = {
@@ -51,6 +52,8 @@ const loadApp = () => {
     state.trazeno_vrijeme;
     upisati_vrijednost_u_labelu('labela_trazena_temperatura', state.trazena_temperatura);
     upisati_vrijednost_u_labelu('labela_trazeno_vrijeme', state.trazeno_vrijeme);
+    upisati_vrijednost_u_labelu('labela_trenutno_vrijeme', vrijeme_trenutno);
+    upisati_vrijednost_u_labelu('labela_trenutna_temperatura', temperatura_trenutna);
     state_light();
 }
 
@@ -60,7 +63,7 @@ var delay_in_microseconds = 1000; //1 sekund
 ///INTERUPT KOJI NAKON ODREDJENOG VREMENA PALI FUNKCIJU
 setInterval(function(){
     if(state.stanje_kuvanja === "kuvanje"){ //Kad pivara radi provjerava dalje da li je kuvanje zavrseno ili nije
-        document.getElementById("labela_trenutno_vrijeme").innerHTML = vrijeme_trenutno;
+        upisati_vrijednost_u_labelu('labela_trenutno_vrijeme', vrijeme_trenutno);
         if(parseInt(vrijeme_trenutno) >= parseInt(state.trazeno_vrijeme)){         
             setState('stanje_kuvanja', 'zavrseno');           
         }
