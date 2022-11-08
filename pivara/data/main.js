@@ -142,7 +142,7 @@ function stop() {
 
 function prekidac_pumpa_piva() {
     if(state.stanje_pivare){
-        setState("pumpa_piva", !state.pumpa_piva);
+        setState('pumpa_piva',!state.pumpa_piva)
     }
     poling_device_to_brewer();
 }
@@ -152,26 +152,6 @@ function prekidac_pumpa_vode() {
         setState('pumpa_vode',!state.pumpa_vode);
     }
     poling_device_to_brewer();
-}
-
-function state_light(){
-    if(state.stanje_pivare){
-        background_boja_zelena("indikator_rada");
-    }
-    else{
-        background_boja_crvena("indikator_rada");
-    }
-    if(state.stanje_kuvanja == "kuvanje"){
-        document.getElementById('slika_brewera').style.filter = "drop-shadow(0 0 0.75rem #ffae00)";
-    }
-    else if(state.stanje_kuvanja == "false"){
-        document.getElementById('slika_brewera').style.filter = "drop-shadow(0 0 0.75rem #F00)";
-    }
-    else{
-        document.getElementById('slika_brewera').style.filter = "drop-shadow(0 0 0.75rem #15ff00)";
-    }
-    upis_boje(state.pumpa_piva,"labela_pumpa_piva");
-    upis_boje(state.pumpa_vode, "labela_pumpa_vode");
 }
 
 function upis_boje(state, id){
