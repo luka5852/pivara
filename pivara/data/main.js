@@ -154,6 +154,22 @@ function prekidac_pumpa_vode() {
     poling_device_to_brewer();
 }
 
+function state_light(){
+    upis_boje(state.stanje_pivare, "indikator_rada");
+    upis_boje(state.pumpa_piva, 'labela_pumpa_piva');
+    upis_boje(state.pumpa_vode, 'labela_pumpa_vode');
+    switch(state.stanje_kuvanja){
+        case "false":
+            document.getElementById("slika_brewera").style.filter = "drop-shadow(0 0 0.75rem #F00)";
+            break;
+        case "kuvanje":
+            document.getElementById("slika_brewera").style.filter = "drop-shadow(0 0 0.75rem #ffae00)";
+            break;
+        default:
+            document.getElementById("slika_brewera").style.filter = "drop-shadow(0 0 0.75rem #15ff00)";
+    }
+}
+
 function upis_boje(state, id){
     if(state){
         background_boja_zelena(id);
