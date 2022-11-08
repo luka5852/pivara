@@ -1,13 +1,13 @@
 let temperatura_trazena;
 let vrijeme_trazeno;
 let vrijeme_trenutno = 0;
-var message;
+var http_message;
 
 const state = {
-    pumpa_piva: JSON.parse(localStorage.getItem('pumpa_piva')) || false,
-    pumpa_vode: JSON.parse(localStorage.getItem('pumpa_vode')) || false, 
     stanje_pivare: JSON.parse(localStorage.getItem('stanje_pivare')) || false,
     stanje_kuvanja: localStorage.getItem('stanje_kuvanja') || 'false',
+    pumpa_piva: JSON.parse(localStorage.getItem('pumpa_piva')) || false,
+    pumpa_vode: JSON.parse(localStorage.getItem('pumpa_vode')) || false, 
     trazeno_vrijeme: JSON.parse(localStorage.getItem('trazeno_vrijeme')) || 0,
     trazena_temperatura: localStorage.getItem('trazena_temperatura') || 0 
 }
@@ -15,6 +15,29 @@ const state = {
 const setState = (key, value) => {
     state[key] = value
     localStorage.setItem(key, value)
+}
+
+//Function for polling of data from device to brewer
+function poling_device_to_brewer(){
+    var tmp_json = JSON.stringify({
+        stanje_pivare: state.stanje_pivare,
+        stanje_kuvanja: state.stanje_kuvanja,
+        pumpa_piva: state.pumpa_piva,
+        pumpa_vode: state.pumpa_vode,
+        temperatura_trazena: state.temperatura_trazena,
+        trazeno_vrijeme: state.trazeno_vrijeme,
+        vrijeme_trenutno: vrijeme_trenutno
+    });
+    var xhttp = new XMLHttpRequest();   //NOW IT NEEDS TO BE SENT TO ESP32 SERVER
+    xhttp.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status == "200"){
+            http_message = this.responseText;
+        }
+    }
+    xhttp.open("POST", "JSON", false);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.send(tmp_json);
+    alert(http_message);
 }
 
 const loadApp = () => {
@@ -58,23 +81,11 @@ setInterval(function(){
 }, delay_in_microseconds * 60); //Svakog (sekunda * X) opali funkciju 
 
 setInterval(function(){
-    //POLING ZA ČITANJE STANJA GRIJAČA
-    //POLING ZA ČITANJE TRENUTNE TEMPERATURE
-}, delay_in_microseconds * 15); //Polling za senzore, grijace itd itd - interakcija sa esp32-kom 
+    poling_device_to_brewer();
+}, delay_in_microseconds * 20); //Every X seconds, poling is done to check/sync brewer with device
 
 
-function send_data_to_esp32(){
-    //POSLATI STANJE PUMPE PIVA
-    //POSLATI STANJE PUMPE VODE
-    //POSLATI TEMPERATURU
-}
 
-/*
-    NAPRAVITI SA STRANE DUGMAD ZA:
-        -PROKLJUCAVANJE VODE
-        -WIRPOL EFEKAT
-        -KLJUCANJE SA HMELJOM
-*/
 
 function upisati_temp_vrijeme() {
     if(state.stanje_pivare){
@@ -120,7 +131,6 @@ function start() {
         temperatura_trazena = document.getElementById("temperatura_trazena").value = '';
         vrijeme_trazeno = document.getElementById("vrijeme_trazeno").value = '';
         document.getElementById('slika_brewera').style.filter = "drop-shadow(0 0 0.75rem #ffae00)";
-    
         //FUNKCIJA DA POŠALJE MIKROKONTROLERU DA ZAPOČNE KUVANJE
     }
     else{
