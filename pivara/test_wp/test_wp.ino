@@ -6,11 +6,17 @@
 const char* ssid = "pivara";
 const char* password = "test1pivara";
 
+#define Pin_Temperatura_Piva 34
+#define Pin_Pumpa_Piva 2
+#define Pin_Pumpa_Voda 2
+#define Pin_Grijac 2
 
-const int ledPin = 2; // Set LED GPIO
 
-String ledState; // Stores LED state
-bool dugme_pumpa = false; // TEST 1 SA PUMPOM
+//Stanja velicina brewera
+int Temperatura_Piva = 0;
+bool Pumpa_Piva_Stanje = false;
+bool Pumpa_Voda_Stanje = false;
+bool Grijac = false;
 
 IPAddress local_ip(192,168,1,1);
 IPAddress gateway(192,168,1,1);
@@ -19,13 +25,12 @@ IPAddress subnet(255,255,255,0);
 
 AsyncWebServer server(80); // Create AsyncWebServer object on port 80
 
-
 void setup(){
   // Serial port for debugging purposes
   Serial.begin(115200);
-  pinMode(ledPin, OUTPUT);
+  pinMode(Pin_Pumpa_Piva, OUTPUT);
   
-  WiFi.softAP(ssid, password);s
+  WiFi.softAP(ssid, password);
   WiFi.softAPConfig(local_ip, gateway, subnet);
   delay(100);
   
@@ -55,34 +60,32 @@ void setup(){
     request->send(SPIFFS, "/slike/brewer.png", "image/png");
   });
     //ZAVRSENO UCITAVANJE FAJLOVA
-    
-  server.on("/PUMPA_PIVA", HTTP_GET, [](AsyncWebServerRequest *request){
-    if(dugme_pumpa){
-      digitalWrite(ledPin, LOW);
-      dugme_pumpa = false;
+    //FUNKCIJE HTTP REQUESTOVA
+ 
+server.on("/PREKIDAC_PUMPA_PIVO", [](AsyncWebServerRequest *request){
+    if(Pumpa_Piva_Stanje){
+      Pumpa_Piva_Stanje = false;
+      digitalWrite(Pin_Pumpa_Piva, HIGH);
     }
     else{
-      digitalWrite(ledPin, HIGH);
-      dugme_pumpa = true;
+      Pumpa_Piva_Stanje = true;
+      digitalWrite(Pin_Pumpa_Piva, LOW);
     }
-    request->send(SPIFFS, "/index.html", String(), false);
-  });
-  
-  server.on("/PUMPA_VODE", HTTP_GET, [](AsyncWebServerRequest *request){
-    if(dugme_pumpa){
-      digitalWrite(ledPin, LOW);
-      dugme_pumpa = false;
+    request->send(200, "text/plain", "Uspjesno ukljucena pumpa piva");
+});
+
+server.on("/PREKIDAC_PUMPA_VODA", [](AsyncWebServerRequest *request){
+    if(Pumpa_Piva_Stanje){
+      Pumpa_Piva_Stanje = false;
+      digitalWrite(Pin_Pumpa_Voda, HIGH);
     }
     else{
-      digitalWrite(ledPin, HIGH);
-      dugme_pumpa = true;
+      Pumpa_Piva_Stanje = true;
+      digitalWrite(Pin_Pumpa_Voda, LOW);
     }
-    request->send(SPIFFS, "/index.html", String(), false);
-  });
-  
-  
-  
-  
+    request->send(200, "text/plain", "Uspjesno ukljucena pumpa vode");
+});
+
   // Start server
   server.begin();
 }

@@ -161,7 +161,6 @@ function prekidac_pumpa_piva() {
             if(this.readyState == 4 && this.status == "200"){
                 message = this.responseText;
             }
-            alert(message);
         }
         xhttp.open("PUT", "PREKIDAC_PUMPA_PIVO", false);
         xhttp.send();
@@ -176,7 +175,6 @@ function prekidac_pumpa_vode() {
             if(this.readyState == 4 && this.status == "200"){
                 message = this.responseText;
             }
-            alert(message);
         }
         xhttp.open("PUT", "PREKIDAC_PUMPA_VODA", false);
         xhttp.send();
