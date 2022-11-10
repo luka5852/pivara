@@ -1,16 +1,20 @@
 let temperatura_trazena;
-let vrijeme_trazeno;
-let vrijeme_trenutno = 0;
 let temperatura_trenutna = 0;
-var http_message;
+let vrijeme_trenutno = 0;
+let vrijeme_trazeno;
+
+const API_URL = "http://192.168.1.1";
 
 const state = {
     stanje_pivare: JSON.parse(localStorage.getItem('stanje_pivare')) || false,
     stanje_kuvanja: localStorage.getItem('stanje_kuvanja') || "false",
     pumpa_piva: JSON.parse(localStorage.getItem('pumpa_piva')) || false,
-    pumpa_vode: JSON.parse(localStorage.getItem('pumpa_vode')) || false, 
+    pumpa_vode: JSON.parse(localStorage.getItem('pumpa_vode')) || false,
+    grijac: JSON.parse(localStorage.getItem('grijac')) || false, 
     trazeno_vrijeme: JSON.parse(localStorage.getItem('trazeno_vrijeme')) || 0,
-    trazena_temperatura: localStorage.getItem('trazena_temperatura') || 0 
+    trenutno_vrijeme: JSON.parse(localStorage.getItem('trenutno_vrijeme')) || 0,
+    trazena_temperatura: JSON.parse(localStorage.getItem('trazena_temperatura')) || 0,
+    trenutna_temperatura: JSON.parse(localStorage.getItem('trenutna_temperatura')) || 0
 }
 
 const setState = (key, value) => {
@@ -29,16 +33,22 @@ function poling_device_to_brewer(){
         trazeno_vrijeme: state.trazeno_vrijeme,
         vrijeme_trenutno: vrijeme_trenutno
     });
-    var xhttp = new XMLHttpRequest();   //NOW IT NEEDS TO BE SENT TO ESP32 SERVER
-    //xhttp.responseType = 'json';
-    xhttp.onreadystatechange = function(){
-        if(this.readyState == 4 && this.status == "200"){
-            http_message = this.response;
+    fetch(`${API_URL}/JSON`, {body: tmp_json, method: "POST"})
+    .then((response) => response.json())
+    .then((data) => {
+        alert(JSON.stringify(data));
+        setState("trenutna_temperatura", data.temperatura_trenutna);
+        setState("trenutno_vrijeme", data.vrijeme_trenutno);
+        setState("grijac", data.grijac);
+        if(data.stanje_kuvanja){
+            setState("stanje_kuvanja", "zavrseno");
         }
-    }
-    xhttp.open("POST", "JSON", false);
-    xhttp.setRequestHeader("Content-Type", "application/json");
-    //xhttp.send(tmp_json);
+    })
+    .catch((err) => console.log(err));
+
+    upis_boje(state.grijac, "labela_grijac");
+    upisati_vrijednost_u_labelu("labela_trenutno_vrijeme", state.trenutno_vrijeme);
+    upisati_vrijednost_u_labelu("labela_trenutna_temperatura", state.trenutna_temperatura);
     state_light();
 }
 
@@ -50,26 +60,19 @@ const loadApp = () => {
     state.stanje_pivare;
     state.trazena_temperatura;
     state.trazeno_vrijeme;
+    state.trenutna_temperatura;
+    state.trenutno_vrijeme;
+    state.grijac;
     upisati_vrijednost_u_labelu('labela_trazena_temperatura', state.trazena_temperatura);
     upisati_vrijednost_u_labelu('labela_trazeno_vrijeme', state.trazeno_vrijeme);
-    upisati_vrijednost_u_labelu('labela_trenutno_vrijeme', vrijeme_trenutno);
-    upisati_vrijednost_u_labelu('labela_trenutna_temperatura', temperatura_trenutna);
+    upisati_vrijednost_u_labelu('labela_trenutno_vrijeme', state.trenutno_vrijeme);
+    upisati_vrijednost_u_labelu('labela_trenutna_temperatura', state.trenutna_temperatura);
     state_light();
 }
 
 loadApp();
 
 var delay_in_microseconds = 1000; //1 sekund
-///INTERUPT KOJI NAKON ODREDJENOG VREMENA PALI FUNKCIJU
-setInterval(function(){
-    if(state.stanje_kuvanja === "kuvanje"){ //Kad pivara radi provjerava dalje da li je kuvanje zavrseno ili nije
-        upisati_vrijednost_u_labelu('labela_trenutno_vrijeme', vrijeme_trenutno);
-        if(parseInt(vrijeme_trenutno) >= parseInt(state.trazeno_vrijeme)){         
-            setState('stanje_kuvanja', 'zavrseno');           
-        }
-        vrijeme_trenutno += 1;
-    }
-}, delay_in_microseconds * 60); //Svakog (sekunda * X) opali funkciju 
 
 setInterval(function(){
     poling_device_to_brewer();
@@ -84,7 +87,7 @@ function upisati_temp_vrijeme() {
     }
     if(tmp_prekid_rada){
         temperatura_trazena = document.getElementById("temperatura_trazena").value;
-        vrijeme_trazeno = document.getElementById("vrijeme_trazeno").value;
+        var vrijeme_trazeno = document.getElementById("vrijeme_trazeno").value;
         if (vrijeme_trazeno == '' || vrijeme_trazeno == null || vrijeme_trazeno < 0) {
             vrijeme_trazeno = 0;
         }
@@ -118,11 +121,11 @@ function start() {
         setState("stanje_kuvanja", "kuvanje");
         temperatura_trazena = document.getElementById("temperatura_trazena").value = "";
         vrijeme_trazeno = document.getElementById("vrijeme_trazeno").value = "";
+        poling_device_to_brewer();
     }
     else{
         alert('Proces je vec u toku');
     }
-    poling_device_to_brewer();
 }
 
 function stop() {
@@ -139,28 +142,29 @@ function stop() {
         setState('stanje_kuvanja', "false");
         temperatura_trazena = document.getElementById("temperatura_trazena").value = '';
         vrijeme_trazeno = document.getElementById("vrijeme_trazeno").value = '';
+        poling_device_to_brewer();
     }
-    poling_device_to_brewer();
 }
 
 function prekidac_pumpa_piva() {
     if(state.stanje_pivare){
         setState('pumpa_piva',!state.pumpa_piva)
+        poling_device_to_brewer();
     }
-    poling_device_to_brewer();
 }
 
 function prekidac_pumpa_vode() {
     if(state.stanje_pivare){
         setState('pumpa_vode',!state.pumpa_vode);
+        poling_device_to_brewer();
     }
-    poling_device_to_brewer();
 }
 
 function state_light(){
     upis_boje(state.stanje_pivare, "indikator_rada");
-    upis_boje(state.pumpa_piva, 'labela_pumpa_piva');
-    upis_boje(state.pumpa_vode, 'labela_pumpa_vode');
+    upis_boje(state.pumpa_piva, "labela_pumpa_piva");
+    upis_boje(state.pumpa_vode, "labela_pumpa_vode");
+    upis_boje(state.grijac, "labela_grijac");
     switch(state.stanje_kuvanja){
         case "false":
             document.getElementById("slika_brewera").style.filter = "drop-shadow(0 0 0.75rem #F00)";
